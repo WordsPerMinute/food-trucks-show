@@ -3,7 +3,6 @@ const app = express()
 const port = process.env.PORT || 3000
 const queries = require('./queries')
 
-
 app.get('/trucks', (request, response) => {
   console.log("okay");
   queries.allTrucks()
