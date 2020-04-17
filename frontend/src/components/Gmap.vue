@@ -8,115 +8,79 @@
 import gmapsInit from '../utils/gmaps';
 
 export default {
+  data(){
+    return {
+      allTrucks: [],
+      loaded: this.trucksLoaded
+    }
+  },
+  props: {
+    trucksLoaded: Boolean,
+  },
+  methods: {
+
+  },
+
   async mounted() {
+    const response = await fetch(`http://localhost:3000/trucks`)
+    const trucks = await response.json();
+    this.allTrucks = trucks;
+    this.$emit("truckCounter", trucks.length)
+    
     try {
       const google = await gmapsInit();
       const geocoder = new google.maps.Geocoder();
       const map = new google.maps.Map(this.$el);
 
-      const markerClickHandler = (marker) => {
-        console.log("clicked");
+      const markerClickHandler = (marker, truckObject) => {
+        console.log("truck object clicked", truckObject);
+        this.$emit('setSelectedTruck', truckObject);
         map.setCenter(marker.getPosition());
         map.setZoom(15);
       };
 
-      const locations = [
-        {
-          position: {
-            lat: 39.734262,
-            lng: -104.966813,
-          },
-          type: 'truck',
-          icon: `http://foodtrucks.coreyhodge.net/map_spotlight/spotlight-truck.png`,
-        },
-        {
-          position: {
-            lat: 39.753261,
-            lng: -104.997017,
-          },
-          type: 'truck',
-          icon: `http://foodtrucks.coreyhodge.net/map_spotlight/spotlight-truck.png`,
-        },
-        {
-          position: {
-            lat: 39.753400,
-            lng: -104.997017,
-          },
-          type: 'truck',
-          icon: `http://foodtrucks.coreyhodge.net/map_spotlight/spotlight-truck.png`,
-        },
-        {
-          position: {
-            lat: 39.739435,
-            lng: -105.050528,
-          },
-          type: 'truck',
-          icon: `http://foodtrucks.coreyhodge.net/map_spotlight/spotlight-truck.png`,
-        },
-        {
-          position: {
-            lat: 39.713384,
-            lng: -104.988240,
-          },
-          type: 'truck',
-          icon: `http://foodtrucks.coreyhodge.net/map_spotlight/spotlight-truck.png`,
-        },
-        {
-          position: {
-            lat: 39.763143,
-            lng: -105.035135,
-          },
-          type: 'truck',
-          icon: `http://foodtrucks.coreyhodge.net/map_spotlight/spotlight-truck.png`,
-        },
-        // ...
-      ];
+      // const locations = [];
 
-      geocoder.geocode({ address: 'Denver, CO' }, (results, status) => {
-        if (status !== 'OK' || !results[0]) {
-          throw new Error(status);
+      const locations = trucks.map(truck => {
+        return {...truck,
+          position: {lat: parseFloat(truck.lat), lng: parseFloat(truck.long)},
+          type: 'truck',
+          icon: `http://foodtrucks.coreyhodge.net/map_spotlight/spotlight-truck.png`
         }
+      })
 
-        console.log(results)
+        geocoder.geocode({ address: 'Denver, CO' }, (results, status) => {
+          if (status !== 'OK' || !results[0]) {
+            throw new Error(status);
+          }
 
-        map.setCenter(results[0].geometry.location);
-        map.fitBounds(results[0].geometry.viewport);
-        map.panTo({lat: 39.739195, lng: -104.988869});
-        map.setZoom(13);
-      });
+          // console.log(results)
+
+          map.setCenter(results[0].geometry.location);
+          map.fitBounds(results[0].geometry.viewport);
+          map.panTo({lat: 39.739195, lng: -104.988869});
+          map.setZoom(13);
+        });
 
 
-      // .map(x => new google.maps.Marker({ ...x, map }))
-      const markers = locations.map((location) => {
-        const marker = new google.maps.Marker({ ...location, map });
-        marker.addListener('click', () => markerClickHandler(marker));
-        return marker;
-      });
-      markers;
+        // .map(x => new google.maps.Marker({ ...x, map }))
+        const markers = locations.map((location) => {
+          const truckObject = location;
+          const marker = new google.maps.Marker({ ...location, map });
+          marker.addListener('click', () => markerClickHandler(marker, truckObject));
+          return marker;
+        });
+        markers;
 
-      // console.log(markers);
+      } catch (error) {
+        console.error(error);
+      }
 
-      // var clusterOptions = {
-      //   gridSize: 20,
-      //   imagePath: 'http://foodtrucks.coreyhodge.net/mapcluster/m',
-      //
-      // }
-      //
-      // const markerClusterer = new MarkerClusterer(map, markers, clusterOptions);
-      // markerClusterer;
-
-    } catch (error) {
-      console.error(error);
-    }
-  },
-  props: {
   },
   computed: {
 
   },
-  methods: {
 
-  }
 }
 </script>
 

@@ -22,9 +22,7 @@ export default {
     }
   },
   methods: {
-    increment(){
-      this.$emit("increment", 10)
-    }
+
   }
 }
 </script>

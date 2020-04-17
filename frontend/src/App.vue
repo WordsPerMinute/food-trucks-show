@@ -7,31 +7,40 @@
       </div>
       <TruckCounter
       :count="count"
-      @increment="increment"
       />
     </header>
     <main>
       <nav>
-        <h3>Filter</h3>
-        <div class="button-container">
-          <input type="radio" id="type" name="type" value="tbd">
-          <label for="radio">Type</label>
-        </div>
-        <div class="button-container">
-          <input type="radio" id="rating" name="rating" value="tbd">
-          <label for="radio">Rating</label>
-        </div>
-        <button>Denver's Top 5</button>
-        <button class="last-button">Random truck</button>
-        <h3>Info</h3>
-        <button>Add truck</button>
-        <button>Suggest edit</button>
+        <template v-if="this.selectedTruck.name">
+          <h3 class="selected-truck"><a :href="this.selectedTruck.website">{{this.selectedTruck.name}}</a></h3>
+          <h4>{{this.selectedTruck.food_type}}</h4>
+          <p>{{this.selectedTruck.hours}}</p>
+          <p>{{this.selectedTruck.address}}</p>
+          <p>{{this.selectedTruck.phone}}</p>
+          <img class="truck-card-img truck-card-first-img" :src="this.selectedTruck.truck">
+          <img class="truck-card-img truck-card-last-img" :src="this.selectedTruck.food">
+        </template>
+        <button class="">Type</button>
+        <button class="">Rating</button>
+        <button class="">Random</button>
+        <button>Top 5</button>
+        <button>Add/edit truck</button>
         <button class="last-button">Contact us</button>
       </nav>
-      <Gmap />
+      <!-- {{this.state.trucksLoaded === true ? <Gmap /> : null}} -->
+      <Gmap :allTrucks="allTrucks" :trucksLoaded="trucksLoaded" @setSelectedTruck="setSelectedTruck" @truckCounter="truckCounter"/>
     </main>
     <footer>
-      <h4>© 2020 FoodTrucks.Show</h4>
+        <div class="hide-this-tiny-img">
+          <img class="tiny-truck-img" :src="this.selectedTruck.food">
+        </div>
+        <div class="hide-this">
+          <h4 class="selected-truck"><a :href="this.selectedTruck.website">{{this.selectedTruck.name}}</a> | {{this.selectedTruck.food_type}} | {{this.selectedTruck.hours}} | {{this.selectedTruck.address}} | {{this.selectedTruck.phone}}</h4>
+        </div>
+        <div class="hide-this-tiny-img">
+          <img class="tiny-truck-img" :src="this.selectedTruck.truck">
+        </div>
+      <h4 class="footer-title">© 2020 FoodTrucks.Show</h4>
     </footer>
   </div>
 </template>
@@ -44,7 +53,10 @@ import Gmap from "@/components/Gmap"
 export default {
   data(){
     return {
-      count: 5
+      count: 0,
+      allTrucks: [],
+      selectedTruck: {},
+      trucksLoaded: false,
     }
   },
   components: {
@@ -52,10 +64,19 @@ export default {
     Gmap: Gmap
   },
   methods: {
-    increment(amount){
-      this.count = this.count + amount
+    truckCounter(amount){
+      this.count = amount
+    },
+    setSelectedTruck(truck){
+      console.log("fired on App level");
+      this.selectedTruck = truck;
     }
+  },
+  created() {
+
   }
+
+
 }
 </script>
 
@@ -65,11 +86,26 @@ export default {
 @import '@/styles/_general.scss';
 @import '@/styles/_sizes.scss';
 @import '@/styles/_typography.scss';
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600&family=Roboto+Slab&display=swap');
 
 * {
   font-family: $body-font;
   color: $grey-3;
   font-size: $baseline;
+}
+
+a:link, a:visited {
+	color: $grey-3;
+	text-decoration: none;
+}
+
+a:active {
+	text-decoration: none;
+	color: #729FCF;
+}
+
+a:hover {
+	color: #FFAB00;
 }
 
 h1 {
@@ -80,6 +116,18 @@ h1 {
   text-align: left;
 }
 
+@media (max-width: $small-breakpoint) {
+  h1 {
+  font-size: $font-xl;
+  }
+}
+
+@media (max-width: $medium-breakpoint) {
+  h1 {
+  font-size: $font-xxl;
+  }
+}
+
 
 h2 {
   font-size: $font-baseline;
@@ -87,12 +135,13 @@ h2 {
 
 @media (max-width: $medium-breakpoint) {
   h2 {
-    font-size: $font-xs;
+    font-size: 10px;
   }
 }
 
 h3 {
   font-size: $font-large;
+  font-family: $body-font;
 }
 
 h4 {
@@ -104,7 +153,6 @@ body {
 }
 
 .app {
-  // font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -122,6 +170,7 @@ header {
   display: flex;
   justify-content: flex-start;
   .truck-counter {
+    font-family: $title-font;
     display: flex;
     align-items: flex-end;
     h2 {
@@ -151,27 +200,56 @@ main {
 
 @media (max-width: $small-breakpoint) {
   main {
+
   }
 }
 
 nav {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   padding: 0 $baseline;
   min-width: 200px;
+  text-align: left;
   h3 {
     margin: $small 0;
     border-bottom: .5px solid $grey-5;
   }
+  .selected-truck {
+    margin-bottom: 2px;
+  }
+  .truck-card-img {
+    width: 200px;
+  }
+  .truck-card-first-img {
+    margin-top: $xs;
+  }
+  .truck-card-last-img {
+    border-bottom: .5px solid $grey-5;
+    margin-bottom: $large;
+  }
+  h4{
+    margin-bottom: $xs;
+  }
+  p {
+    font-size: $small;
+    margin: $xs 0;
+  }
   button {
     // align-self: center;
-    margin: $small 0;
+    margin: $xs 0;
     border: none;
     background-color: hsl(27, 100%, 95%);
     color: hsl(27, 100%, 20%);
     font-size: $font-xs;
+    font-weight: 600;
     padding: $xxs $xxs;
+  }
+  button:hover {
+    background-color: hsl(40, 100%, 80%);
+    color: hsl(40, 100%, 20%);
+  }
+  .last-button {
   }
 }
 
@@ -179,6 +257,19 @@ nav {
   nav {
     display: none;
   }
+}
+
+@media (max-width: $medium-breakpoint) {
+  nav {
+    min-width: 100px;
+    .truck-card-img {
+      width: 125px;
+    }
+  }
+}
+
+a {
+
 }
 
 .gmap {
@@ -203,8 +294,29 @@ footer {
   padding: $xs $xs;
 }
 
-@media (max-width: 450px) {
+.hide-this {
+  display: none;
+}
 
+.hide-this-tiny-img {
+  display: none;
+}
+
+@media (max-width: $small-breakpoint) {
+  .tiny-truck-img {
+    width: 100px;
+  }
+
+  .hide-this-tiny-img {
+    display: flex;
+  }
+
+  .hide-this {
+    display: flex;
+  }
+  .footer-title {
+    display: none;
+  }
 }
 
 </style>
