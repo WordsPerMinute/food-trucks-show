@@ -40,7 +40,7 @@
         <div class="hide-this-tiny-img">
           <img class="tiny-truck-img" :src="this.selectedTruck.truck">
         </div>
-      <h4 class="footer-title">© 2020 FoodTrucks.Show</h4>
+      <h4 class="footer-title">© 2020 FoodTrucks.Show<span class="icon-attribution"> - Credit to <a href="https://www.flaticon.com/authors/freepik">Freepik</a> via <a href="http://www.flaticon.com/">www.flaticon.com</a> for icons that were photoshopped/repurposed for this noncommercial project</span></h4>
     </footer>
   </div>
 </template>
@@ -292,6 +292,13 @@ footer {
   display: flex;
   align-items: flex-start;
   padding: $xs $xs;
+}
+
+.icon-attribution {
+  color: $grey-6;
+  a {
+      color: $grey-6;
+  }
 }
 
 .hide-this {
