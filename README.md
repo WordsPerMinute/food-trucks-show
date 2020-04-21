@@ -22,7 +22,6 @@ This project was required to be...
 At this time, some additional base functionality needs to be added before it makes sense to ask for contributor help. If you'd like to get in touch, you can reach me via my website, http://coreyhodge.net
 
 ## Videos
-1. Overview (Login, see example user data)
 [![](youtube_link.png)](https://youtu.be/tLvKEjiw-aU "FoodTrucks.Show - a Food Truck Finder")
 
 ## Preview Gifs
