@@ -18,7 +18,7 @@ The idea is to provide an simple interactive map. There are plenty of food truck
 This project was required to be...
 - A Full Stack app, any languages/frameworks were permitted so long as I used 3 new (to me) technologies
 
-## Contibutor's Guide
+## Contributor's Guide
 At this time, some additional base functionality needs to be added before it makes sense to ask for contributor help. If you'd like to get in touch, you can reach me via my website, http://coreyhodge.net
 
 ## Videos
